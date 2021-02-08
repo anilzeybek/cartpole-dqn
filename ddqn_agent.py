@@ -57,7 +57,8 @@ class Agent():
 
         Q_current = self.policy_network(states).gather(1, actions)
 
-        Q_targets_next = self.target_network(next_states).max(1)[0].unsqueeze(1)
+        a = self.policy_network(next_states).argmax(1).unsqueeze(1)
+        Q_targets_next = self.target_network(next_states).gather(1, a)
         Q_targets = rewards + GAMMA * Q_targets_next * (1 - dones)
 
         loss = F.mse_loss(Q_current, Q_targets)

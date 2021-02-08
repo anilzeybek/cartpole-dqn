@@ -1,13 +1,13 @@
 import gym
 import numpy as np
 from collections import deque
-from dqn_agent import Agent
+from ddqn_agent import Agent
 
 
-n_episodes = 2000
+n_episodes = 10000
 
 if __name__ == "__main__":
-    env = gym.make('CartPole-v1')
+    env = gym.make('LunarLander-v2')
     agent = Agent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
     scores = deque(maxlen=100)
 
@@ -26,6 +26,10 @@ if __name__ == "__main__":
         scores.append(score)
         agent.update_eps()
 
-        print('\rEpisode: {}\tAverage Score: {:.2f}'.format(i, np.mean(scores)), end="")
-        if i % 100 == 0:
-            print('\rEpisode: {}\tAverage Score: {:.2f}'.format(i, np.mean(scores)))
+        mean_scores = np.mean(scores)
+        if mean_scores > 200:
+            print("Solved!")
+
+        print(f'\rEpisode: {i}\tAverage Score: {mean_scores:.2f}', end="")
+        if i % 10 == 0:
+            print(f'\rEpisode: {i}\tAverage Score: {mean_scores:.2f}')
