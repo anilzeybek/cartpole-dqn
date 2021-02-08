@@ -41,6 +41,6 @@ if __name__ == "__main__":
         while not done:
             action = agent.act(state)
             next_state, reward, done, _ = env.step(action)
-            
+
             state = next_state
             env.render()

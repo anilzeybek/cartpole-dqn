@@ -17,7 +17,6 @@ EPS_END = 0.01
 EPS_DECAY = 0.995
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(f"Using: {device}\n")
 
 
 class Agent():
@@ -46,7 +45,7 @@ class Agent():
         if np.random.rand() < self.eps:
             return np.random.randint(self.action_size)
         else:
-            state = torch.from_numpy(state).unsqueeze(0).to(device)
+            state = torch.from_numpy(state).float().unsqueeze(0).to(device)
             action_values = self.policy_network(state)
             return torch.argmax(action_values).item()
 
@@ -58,8 +57,7 @@ class Agent():
 
         Q_current = self.policy_network(states).gather(1, actions)
 
-        a = self.policy_network(next_states).argmax(1).unsqueeze(1)
-        Q_targets_next = self.target_network(next_states).gather(1, a)
+        Q_targets_next = self.target_network(next_states).max(1)[0].unsqueeze(1)
         Q_targets = rewards + GAMMA * Q_targets_next * (1 - dones)
 
         loss = F.mse_loss(Q_current, Q_targets)
