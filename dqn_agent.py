@@ -17,9 +17,10 @@ EPS_END = 0.01
 EPS_DECAY = 0.995
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f"Using: {device}\n")
 
 
-class Agent():
+class DQNAgent():
     def __init__(self, state_size, action_size):
         self.state_size = state_size
         self.action_size = action_size
@@ -45,7 +46,7 @@ class Agent():
         if np.random.rand() < self.eps:
             return np.random.randint(self.action_size)
         else:
-            state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+            state = torch.from_numpy(state).unsqueeze(0).to(device)
             action_values = self.policy_network(state)
             return torch.argmax(action_values).item()
 

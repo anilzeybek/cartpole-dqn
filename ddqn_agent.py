@@ -20,7 +20,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using: {device}\n")
 
 
-class Agent():
+class DDQNAgent():
     def __init__(self, state_size, action_size):
         self.state_size = state_size
         self.action_size = action_size
