@@ -13,11 +13,17 @@ if sys.argv[1] == "dqn":
 
     agent = DQNAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
     print("Using DQN algorithm")
-else:
+elif sys.argv[1] == "ddqn":
     from ddqn_agent import DDQNAgent
 
     agent = DDQNAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
     print("Using DDQN algorithm")
+else:
+    from dueling_agent import DuelingAgent
+
+    agent = DuelingAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
+    print("Using Dueling algorithm")
+
 
 scores = deque(maxlen=10)
 for i in range(1, N_EPISODES+1):
