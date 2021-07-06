@@ -1,4 +1,4 @@
-Solving lunarlander environment from gym with dqn, double dqn, dueling network architectures and prioritized experience replay with proportional prioritization algorithms.
+Solving LunarLander-v2 environment from gym with dqn, double dqn, dueling network architectures and prioritized experience replay with proportional prioritization algorithms.
 
 Note that PER algorithm works slower than others because of not using some advanced data structures to decrease complexity.
 
