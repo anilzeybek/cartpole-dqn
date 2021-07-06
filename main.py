@@ -7,6 +7,9 @@ from collections import deque
 N_EPISODES = 10000
 env = gym.make('LunarLander-v2')
 
+if (len(sys.argv) == 1):
+    print("Select an algorithm: dqn/ddqn/per/duel")
+    quit()
 
 if sys.argv[1] == "dqn":
     from dqn_agent import DQNAgent
@@ -18,11 +21,19 @@ elif sys.argv[1] == "ddqn":
 
     agent = DDQNAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
     print("Using DDQN algorithm")
-else:
+elif sys.argv[1] == "per":
+    from ddqn_per_agent import DDQN_PERAgent
+
+    agent = DDQN_PERAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
+    print("Using DDQN-PER algorithm")
+elif sys.argv[1] == "duel":
     from dueling_agent import DuelingAgent
 
     agent = DuelingAgent(state_size=env.observation_space.shape[0], action_size=env.action_space.n)
     print("Using Dueling algorithm")
+else:
+    print("dqn/ddqn/per/duel???")
+    quit()
 
 
 scores = deque(maxlen=10)
