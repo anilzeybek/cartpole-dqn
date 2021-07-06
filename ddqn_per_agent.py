@@ -6,7 +6,7 @@ from model import QNetwork
 from prioritized_replay_buffer import PrioritizedReplayBuffer
 
 
-BUFFER_SIZE = 100000
+BUFFER_SIZE = 10000
 BATCH_SIZE = 64
 GAMMA = 0.99
 SYNC_TARGET_EVERY = 1000
@@ -44,13 +44,12 @@ class DDQN_PERAgent():
 
         self.t_step = (self.t_step + 1) % UPDATE_EVERY
         if self.t_step == 0 and len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample(BATCH_SIZE, device)
+            experiences = self.memory.sample(BATCH_SIZE)
             self.learn(experiences)
 
         self.update_step = (self.update_step + 1) % UPDATE_PRIORITIES_EVERY
         if self.update_step == 0:
             self.memory.update_probabilities()
-        
 
     def act(self, state):
         if np.random.rand() < self.eps:
@@ -73,21 +72,21 @@ class DDQN_PERAgent():
         Q_current = self.policy_network(states).gather(1, actions)
 
         a = self.policy_network(next_states).argmax(1).unsqueeze(1)
-        Q_targets_next = self.target_network(next_states).gather(1, a)
-        Q_targets = rewards + GAMMA * Q_targets_next * (1 - dones)
+        Q_target_next = self.target_network(next_states).gather(1, a)
+        Q_target = rewards + GAMMA * Q_target_next * (1 - dones)
 
-        loss = F.mse_loss(Q_current, Q_targets)
+        loss = F.mse_loss(Q_current, Q_target)
         # TODO: insert importance sampling here (change 'loss')
+
+        for idx, e in enumerate(experiences):
+            new_priority = (Q_target[idx] - Q_current[idx]).abs().detach().numpy()[0]
+            e.update_priority(new_priority)
+
+            self.max_priority = max(self.max_priority, new_priority)
 
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-        for idx, e in enumerate(experiences):
-            new_priority = (Q_current - Q_targets).abs().detach().numpy()[idx][0]
-            e.update_priority(new_priority)
-
-            self.max_priority = max(self.max_priority, new_priority)
 
         self.learn_count += 1
         if self.learn_count % SYNC_TARGET_EVERY == 0:

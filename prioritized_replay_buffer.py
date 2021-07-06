@@ -20,8 +20,9 @@ class Experience:
 class PrioritizedReplayBuffer:
     def __init__(self, buffer_size, alpha):
         self.memory = deque(maxlen=buffer_size)
+        self.old_memory = deque(maxlen=buffer_size)
         self.alpha = alpha
-        self.priorities = []
+        self.probabilities = []
 
     def store_transition(self, state, action, reward, next_state, done, priority):
         e = Experience(state, action, reward, next_state, done, priority)
@@ -31,10 +32,10 @@ class PrioritizedReplayBuffer:
         sum_priorities = sum(e.priority**self.alpha for e in self.memory)
         self.probabilities = [e.priority**self.alpha / sum_priorities for e in self.memory]
 
-    def sample(self, batch_size, device):
-        # TODO: here is problematic right now, a better implementation needed because
-        # memory grows faster than probabilities list, which is error
-        experience_indexes = np.random.choice(len(self.memory), batch_size, p=self.probabilities)
+        self.old_memory = self.memory.copy()
+
+    def sample(self, batch_size):
+        experience_indexes = np.random.choice(len(self.old_memory), batch_size, p=self.probabilities)
         experiences = [self.memory[i] for i in experience_indexes]
 
         return experiences
