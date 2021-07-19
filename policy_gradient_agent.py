@@ -34,9 +34,9 @@ class PolicyGradientAgent:
         self.reward_memory.append(reward)
 
     def learn(self):
-        G = np.zeros_like(self.reward_memory)
+        G = torch.zeros_like(torch.tensor(self.reward_memory))
 
-        # in below nested loop, we calculate returns for all visited states during the episode
+        # In below nested loop, we calculate returns for all visited states during the episode.
         for t in range(len(self.reward_memory)):
             G_sum = 0
             discount = 1
@@ -46,11 +46,9 @@ class PolicyGradientAgent:
 
             G[t] = G_sum
 
-        G = torch.tensor(G, dtype=torch.float)
-
         loss = 0
         for g, logprob in zip(G, self.action_memory):
-            loss -= g * logprob  # -= because we want gradient ascent, not descent
+            loss -= g * logprob  # We are subtracting because we want gradient ascent, not descent. But by default, pytorch does descent.
 
         self.optimizer.zero_grad()
         loss.backward()
