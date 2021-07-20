@@ -7,8 +7,6 @@ Dependencies:
 - PyTorch
 - Numpy
 
-Usage: `python3 main.py [dqn, ddqn, per, duel]`
-
 Papers for some of these algorithms:
 - DQN: https://www.nature.com/articles/nature14236
 - DDQN: https://arxiv.org/abs/1509.06461
