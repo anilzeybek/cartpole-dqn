@@ -22,12 +22,11 @@ class PolicyGradientAgent:
     def act(self, state):
         state = torch.from_numpy(state).unsqueeze(0)
         probabilities = F.softmax(self.policy(state))
+        
         action_probs = torch.distributions.Categorical(probabilities)
         action = action_probs.sample()
-
-        log_probs = action_probs.log_prob(action)
-        self.action_memory.append(log_probs)
-
+        
+        self.action_memory.append(action_probs.log_prob(action))
         return action.item()
 
     def store_reward(self, reward):
